@@ -1,0 +1,98 @@
+{
+  "mode": "OFFLINE reference-query regression only; NOT an LLM accuracy result",
+  "cases": 12,
+  "correct": 12,
+  "execution_result_accuracy": 1.0,
+  "rows": [
+    {
+      "question": "What is total revenue?",
+      "correct": true,
+      "latency_seconds": 0.0016,
+      "sql": "SELECT SUM(quantity*unit_price) AS revenue FROM order_items",
+      "error": null
+    },
+    {
+      "question": "How many orders are there?",
+      "correct": true,
+      "latency_seconds": 0.0008,
+      "sql": "SELECT COUNT(*) AS orders FROM orders",
+      "error": null
+    },
+    {
+      "question": "Show revenue by category",
+      "correct": true,
+      "latency_seconds": 0.0011,
+      "sql": "SELECT p.category,SUM(i.quantity*i.unit_price) AS revenue FROM order_items i JOIN products p ON i.product_id=p.product_id GROUP BY p.category ORDER BY p.category",
+      "error": null
+    },
+    {
+      "question": "Which region generates the most revenue?",
+      "correct": true,
+      "latency_seconds": 0.001,
+      "sql": "SELECT c.region,SUM(i.quantity*i.unit_price) AS revenue FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_items i ON o.order_id=i.order_id GROUP BY c.region ORDER BY revenue DESC LIMIT 1",
+      "error": null
+    },
+    {
+      "question": "Show monthly revenue",
+      "correct": true,
+      "latency_seconds": 0.0009,
+      "sql": "SELECT SUBSTR(o.order_date,1,7) AS month,SUM(i.quantity*i.unit_price) AS revenue FROM orders o JOIN order_items i ON o.order_id=i.order_id GROUP BY month ORDER BY month",
+      "error": null
+    },
+    {
+      "question": "List customers with no orders",
+      "correct": true,
+      "latency_seconds": 0.0007,
+      "sql": "SELECT c.customer_id FROM customers c LEFT JOIN orders o ON c.customer_id=o.customer_id WHERE o.order_id IS NULL ORDER BY c.customer_id",
+      "error": null
+    },
+    {
+      "question": "What is the average order value?",
+      "correct": true,
+      "latency_seconds": 0.0008,
+      "sql": "SELECT AVG(total) AS average_order_value FROM (SELECT order_id,SUM(quantity*unit_price) AS total FROM order_items GROUP BY order_id)",
+      "error": null
+    },
+    {
+      "question": "Which product sold the most units?",
+      "correct": true,
+      "latency_seconds": 0.0009,
+      "sql": "SELECT p.name,SUM(i.quantity) AS units FROM products p JOIN order_items i ON p.product_id=i.product_id GROUP BY p.product_id ORDER BY units DESC LIMIT 1",
+      "error": null
+    },
+    {
+      "question": "How many customers are in each region?",
+      "correct": true,
+      "latency_seconds": 0.0009,
+      "sql": "SELECT region,COUNT(*) AS customers FROM customers GROUP BY region ORDER BY region",
+      "error": null
+    },
+    {
+      "question": "Show orders worth more than 500",
+      "correct": true,
+      "latency_seconds": 0.0008,
+      "sql": "SELECT order_id,SUM(quantity*unit_price) AS revenue FROM order_items GROUP BY order_id HAVING SUM(quantity*unit_price)>500 ORDER BY order_id",
+      "error": null
+    },
+    {
+      "question": "Show revenue for Electronics",
+      "correct": true,
+      "latency_seconds": 0.0007,
+      "sql": "SELECT SUM(i.quantity*i.unit_price) AS revenue FROM order_items i JOIN products p ON i.product_id=p.product_id WHERE p.category='Electronics'",
+      "error": null
+    },
+    {
+      "question": "Show total units sold",
+      "correct": true,
+      "latency_seconds": 0.0007,
+      "sql": "SELECT SUM(quantity) AS units FROM order_items",
+      "error": null
+    }
+  ],
+  "limitations": [
+    "Synthetic single-schema benchmark",
+    "Offline references do not measure language generation",
+    "Result-set comparison ignores output ordering and column aliases",
+    "12 visible examples are a development suite, not a hidden generalization test"
+  ]
+}
